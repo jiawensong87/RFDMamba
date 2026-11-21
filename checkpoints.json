@@ -1,0 +1,78 @@
+{
+  "configuration": "RFDMamba, FDF ungated, reliability floor 0.1",
+  "format": "PyTorch tensor-only state_dict",
+  "checkpoints": [
+    {
+      "dataset": "Vaihingen",
+      "scale": 4,
+      "file": "RFDMamba-Vaihingen-x4.pth",
+      "sha256": "e53a60dfe032f84b900e9ec7f0532f3f318dc6b304cf85ebb6694ddf64472e6b",
+      "test_patches": 285,
+      "paper_metrics": {
+        "rmse_m": 0.0317,
+        "mae_m": 0.0111,
+        "ssim": 0.9987
+      }
+    },
+    {
+      "dataset": "Vaihingen",
+      "scale": 8,
+      "file": "RFDMamba-Vaihingen-x8.pth",
+      "sha256": "93a9a76065264fc44d0b1b4c7cfac0ba0e45a77c16ede922763fa646995ed26e",
+      "test_patches": 285,
+      "paper_metrics": {
+        "rmse_m": 0.0908,
+        "mae_m": 0.041,
+        "ssim": 0.9903
+      }
+    },
+    {
+      "dataset": "Vaihingen",
+      "scale": 16,
+      "file": "RFDMamba-Vaihingen-x16.pth",
+      "sha256": "fe07645f28e6356e8da44c9585f17cb020d470a430bb7888f945e7a5404b4b11",
+      "test_patches": 285,
+      "paper_metrics": {
+        "rmse_m": 0.1753,
+        "mae_m": 0.0891,
+        "ssim": 0.9747
+      }
+    },
+    {
+      "dataset": "Cologne",
+      "scale": 4,
+      "file": "RFDMamba-Cologne-x4.pth",
+      "sha256": "6b692c2ce71552c2f60ae68c8599ae464e373407fa530cd8315b5189f4be011e",
+      "test_patches": 1067,
+      "paper_metrics": {
+        "rmse_m": 1.0051,
+        "mae_m": 0.34,
+        "ssim": 0.9166
+      }
+    },
+    {
+      "dataset": "Cologne",
+      "scale": 8,
+      "file": "RFDMamba-Cologne-x8.pth",
+      "sha256": "d354ef680ccb8b7da26a4e4725c013d7f08aab90f55364eaff6c64c66d710694",
+      "test_patches": 1067,
+      "paper_metrics": {
+        "rmse_m": 1.2823,
+        "mae_m": 0.5355,
+        "ssim": 0.8432
+      }
+    },
+    {
+      "dataset": "Cologne",
+      "scale": 16,
+      "file": "RFDMamba-Cologne-x16.pth",
+      "sha256": "3b5266fa43995fd05dfc57006c8b70f1c977ffea4e246a9b170843c571ae3684",
+      "test_patches": 1067,
+      "paper_metrics": {
+        "rmse_m": 1.5569,
+        "mae_m": 0.7429,
+        "ssim": 0.7915
+      }
+    }
+  ]
+}
