@@ -63,16 +63,19 @@ differences across library versions and hardware are possible.
 python train.py --data-root /path/to/prepared/Vaihingen --scale 16 --out runs/vaihingen-x16
 python evaluate.py --data-root /path/to/prepared/Vaihingen --scale 16 \
   --weights weights/RFDMamba-Vaihingen-x16.pth --out runs/eval-vaihingen-x16 \
-  --expected-count 285
+  --expected-count 285 --legacy-amp
 ```
 
 The training entry point uses the three-term loss (pixel L1, Sobel gradient,
 and geometry-consistency reliability), AdamW and validation RMSE selection.
 It retains the spatial augmentation implementation (joint flips and quarter
 turns) and does not automatically evaluate the test set during training.
-The benchmark evaluator runs in FP32, crops a border of `scale` pixels, and
-reports tile-wise RMSE, MAE, SSIM and EdgeRMSE. These are streamlined
-full-model entry points, not the full paper experiment suite.
+The evaluator defaults to FP32, crops a border of `scale` pixels, and
+reports tile-wise RMSE, MAE, SSIM and EdgeRMSE. For the archived Vaihingen
+benchmark, use `--legacy-amp` to reproduce the original CUDA autocast
+setting; this can affect the last reported digit even though the weights
+are identical. Use FP32 for the final Cologne benchmark. These are
+streamlined full-model entry points, not the full paper experiment suite.
 
 ## Checkpoints
 

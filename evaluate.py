@@ -37,10 +37,10 @@ def patch_metrics(gt, pred, border):
 
 
 @torch.inference_mode()
-def evaluate(model, loader, device, border):
+def evaluate(model, loader, device, border, *, legacy_amp=False):
     model.eval()
     rows = []
-    with torch.autocast(device_type=device.type, enabled=False):
+    with torch.autocast(device_type=device.type, dtype=torch.float16, enabled=legacy_amp):
         for optical, dsm_up, gt, names in loader:
             pred = model(optical.to(device), dsm_up.to(device)).float().cpu().numpy()
             gt = gt.numpy()
@@ -72,6 +72,10 @@ def parser_for_eval():
     parser.add_argument("--dsm-mean", type=float)
     parser.add_argument("--dsm-std", type=float)
     parser.add_argument("--expected-count", type=int)
+    parser.add_argument(
+        "--legacy-amp", action="store_true",
+        help="Use CUDA FP16 autocast as in the archived Vaihingen benchmark.",
+    )
     return parser
 
 
@@ -82,18 +86,25 @@ def main():
         parser.error("Provide both --dsm-mean and --dsm-std, or neither.")
     stats = None if args.dsm_mean is None else (args.dsm_mean, args.dsm_std)
     device = torch.device(args.device)
+    if args.legacy_amp and device.type != "cuda":
+        parser.error("--legacy-amp requires a CUDA device.")
     if device.type == "cuda":
         torch.backends.cuda.matmul.allow_tf32 = False
-        torch.backends.cudnn.allow_tf32 = False
+        torch.backends.cudnn.allow_tf32 = args.legacy_amp
+        torch.backends.cudnn.deterministic = True
+        torch.backends.cudnn.benchmark = False
     dataset = DSMPatches(args.data_root, args.split, args.scale, args.patch_size, stats=stats)
     if args.expected_count is not None and len(dataset) != args.expected_count:
         raise ValueError(f"Expected {args.expected_count} pairs, found {len(dataset)}.")
     loader = DataLoader(dataset, batch_size=args.batch_size, num_workers=args.workers)
     model = RFDMamba()
     model.load_state_dict(torch.load(args.weights, map_location="cpu", weights_only=True), strict=True)
-    metrics, rows = evaluate(model.to(device), loader, device, args.scale)
+    metrics, rows = evaluate(
+        model.to(device), loader, device, args.scale, legacy_amp=args.legacy_amp,
+    )
     result = {
         "scale": args.scale, "split": args.split, "count": len(rows),
+        "precision": "legacy CUDA FP16 autocast" if args.legacy_amp else "FP32",
         "dsm_normalization": {"mean_m": dataset.mean, "std_m": dataset.std},
         "metrics": metrics,
     }
